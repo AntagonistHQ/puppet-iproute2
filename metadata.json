@@ -17,6 +17,11 @@
     }
 ],
   "dependencies": [
+    {
+      "version_range": ">= 3.2.0",
+      "name": "puppetlabs-stdlib"
+    }
+
 
   ],
   "types": [

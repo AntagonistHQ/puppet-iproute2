@@ -1,14 +1,20 @@
 #iproute2 route
 define iproute2::route(
-  $gateway,
-  $device,
-  $table = 'main',
+  Stdlib::IP::Address $gateway,
+  String $device,
+  String $table = 'main',
 ) {
 
-  ensure_resource('concat', "/etc/sysconfig/network-scripts/route-${device}", {'ensure' => 'present'})
+  $routefile = $gateway ? {
+    Stdlib::IP::Address::V4 => 'route',
+    Stdlib::IP::Address::V6 => 'route6',
+    default                 => fail('Gateway address needs to be IPv4 or IPv6'),
+  }
 
-  concat::fragment { "route_fragment_${name}":
-    target  => "/etc/sysconfig/network-scripts/route-${device}",
+  ensure_resource('concat', "/etc/sysconfig/network-scripts/${routefile}-${device}", {'ensure' => 'present'})
+
+  concat::fragment { "${routefile}_fragment_${name}":
+    target  => "/etc/sysconfig/network-scripts/${routefile}-${device}",
     content => "default via ${gateway} dev ${device} table ${table}\n",
     require => Iproute2::Rt_table[$table],
   }
