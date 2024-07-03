@@ -9,7 +9,7 @@ define iproute2::route(
     fail('At least one of gateway|subnet must be set')
   }
 
-  if is_ipv6_address($gateway) or is_ipv6_address($subnet) {
+  if ($gateway =~ Stdlib::IP::Address::V6 or $subnet =~ Stdlib::IP::Address::V6) {
     $routefile = 'route6'
   } else {
     $routefile = 'route'
